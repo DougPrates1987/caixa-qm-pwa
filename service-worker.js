@@ -1,11 +1,11 @@
-const CACHE_NAME = 'caixa-qm-v3';
+const CACHE_NAME = 'caixa-qm-v4-offline-sync';
 
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon-192-qm.png',
-  './icons/icon-512-qm.png'
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

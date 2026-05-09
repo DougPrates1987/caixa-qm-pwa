@@ -8,7 +8,7 @@
 
   <meta name="theme-color" content="#003b73">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-192-qm.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
   <style>
     :root{
@@ -32,6 +32,27 @@
     }
 
     .hidden{display:none!important}
+    .offline-banner{
+      display:none;
+      background:#fff7ed;
+      color:#9a3412;
+      border-bottom:1px solid #fed7aa;
+      padding:10px 18px;
+      font-size:13px;
+      font-weight:700;
+      text-align:center;
+    }
+    .offline-banner.show{display:block}
+    .sync-badge{
+      display:inline-block;
+      background:#eef4ff;
+      color:var(--blue);
+      padding:5px 8px;
+      border-radius:3px;
+      font-size:12px;
+      margin-left:8px;
+      font-weight:700;
+    }
 
     .topbar{
       background:var(--blue);
@@ -492,9 +513,14 @@
 </head>
 <body>
 
+  <div id="offlineBanner" class="offline-banner">
+    Modo offline ativo: os lançamentos serão salvos no aparelho e sincronizados quando a internet voltar.
+    <span id="syncBadge" class="sync-badge">0 pendente(s)</span>
+  </div>
+
   <section id="loginPage" class="login-page">
     <div class="login-card">
-      <img src="./icons/icon-192-qm.png" alt="Fluxo de Caixa">
+      <img src="./icons/icon-192.png" alt="Fluxo de Caixa">
 
       <h1>Controle de Caixa QM</h1>
       <p>Sistema Interno | PWA Cloudflare | Offline visual ativo</p>
@@ -537,6 +563,7 @@
         <button class="btn btn-light" onclick="abrirPagina('despesa')">Nova Despesa</button>
         <button class="btn btn-light" onclick="abrirPagina('receita')">Nova Receita</button>
         <button class="btn btn-light" onclick="abrirPagina('historico')">Histórico</button>
+        <button class="btn btn-light" onclick="sincronizarOffline()">Sincronizar</button>
       </div>
 
       <div id="page-dashboard">
@@ -817,6 +844,12 @@
         usuarioLogado = JSON.parse(salvo);
         abrirSistema();
       }
+
+      atualizarStatusOffline();
+
+      if(navigator.onLine){
+        sincronizarOffline();
+      }
     });
 
     async function api(action, data = {}){
@@ -833,8 +866,112 @@
         body:body
       });
 
+      if(!res.ok){
+        throw new Error('Falha de conexão: ' + res.status);
+      }
+
       return await res.json();
     }
+
+
+    const OFFLINE_QUEUE_KEY = 'qm_offline_queue_v1';
+
+    function getOfflineQueue(){
+      try{
+        return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+      }catch(e){
+        return [];
+      }
+    }
+
+    function setOfflineQueue(queue){
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue || []));
+      atualizarStatusOffline();
+    }
+
+    function adicionarNaFilaOffline(action, payload){
+      const queue = getOfflineQueue();
+
+      queue.push({
+        idLocal: 'OFF-' + Date.now() + '-' + Math.floor(Math.random() * 9999),
+        action: action,
+        payload: payload,
+        usuarioLogado: usuarioLogado,
+        criadoEm: new Date().toISOString()
+      });
+
+      setOfflineQueue(queue);
+    }
+
+    function atualizarStatusOffline(){
+      const banner = document.getElementById('offlineBanner');
+      const badge = document.getElementById('syncBadge');
+      const total = getOfflineQueue().length;
+
+      if(badge){
+        badge.innerText = total + ' pendente(s)';
+      }
+
+      if(!banner) return;
+
+      if(!navigator.onLine || total > 0){
+        banner.classList.add('show');
+      }else{
+        banner.classList.remove('show');
+      }
+    }
+
+    async function sincronizarOffline(){
+      if(!navigator.onLine) {
+        atualizarStatusOffline();
+        return;
+      }
+
+      let queue = getOfflineQueue();
+
+      if(queue.length === 0){
+        atualizarStatusOffline();
+        return;
+      }
+
+      const restantes = [];
+
+      for(const item of queue){
+        try{
+          const res = await api(item.action, {
+            payload: item.payload
+          });
+
+          if(!res || res.success !== true){
+            restantes.push(item);
+          }
+
+        }catch(e){
+          restantes.push(item);
+        }
+      }
+
+      setOfflineQueue(restantes);
+
+      if(restantes.length === 0){
+        carregarDashboard();
+
+        if(!document.getElementById('page-historico').classList.contains('hidden')){
+          carregarHistorico();
+        }
+
+        alert('Sincronização concluída com sucesso.');
+      }
+    }
+
+    window.addEventListener('online', function(){
+      atualizarStatusOffline();
+      sincronizarOffline();
+    });
+
+    window.addEventListener('offline', function(){
+      atualizarStatusOffline();
+    });
 
     async function login(){
       const usuario = document.getElementById('loginUsuario').value.trim();
@@ -994,20 +1131,34 @@
       }
 
       msg.className = 'msg muted';
-      msg.innerText = 'Salvando...';
+      msg.innerText = navigator.onLine ? 'Salvando...' : 'Sem internet. Salvando offline...';
 
-      const res = await api('salvarDespesa', {
-        payload: payload
-      });
+      let res = null;
 
-      if(!res.success){
-        msg.className = 'msg error';
-        msg.innerText = res.message || 'Erro ao salvar.';
-        return;
+      try{
+        if(!navigator.onLine){
+          throw new Error('offline');
+        }
+
+        res = await api('salvarDespesa', {
+          payload: payload
+        });
+
+        if(!res.success){
+          msg.className = 'msg error';
+          msg.innerText = res.message || 'Erro ao salvar.';
+          return;
+        }
+
+        msg.className = 'msg success';
+        msg.innerText = 'Despesa salva com sucesso.';
+
+      }catch(e){
+        adicionarNaFilaOffline('salvarDespesa', payload);
+
+        msg.className = 'msg success';
+        msg.innerText = 'Sem internet. Despesa salva offline e será sincronizada automaticamente.';
       }
-
-      msg.className = 'msg success';
-      msg.innerText = 'Despesa salva com sucesso.';
 
       document.getElementById('despesaCategoria').value = '';
       document.getElementById('despesaDescricao').value = '';
@@ -1037,20 +1188,34 @@
       }
 
       msg.className = 'msg muted';
-      msg.innerText = 'Salvando...';
+      msg.innerText = navigator.onLine ? 'Salvando...' : 'Sem internet. Salvando offline...';
 
-      const res = await api('salvarReceita', {
-        payload: payload
-      });
+      let res = null;
 
-      if(!res.success){
-        msg.className = 'msg error';
-        msg.innerText = res.message || 'Erro ao salvar.';
-        return;
+      try{
+        if(!navigator.onLine){
+          throw new Error('offline');
+        }
+
+        res = await api('salvarReceita', {
+          payload: payload
+        });
+
+        if(!res.success){
+          msg.className = 'msg error';
+          msg.innerText = res.message || 'Erro ao salvar.';
+          return;
+        }
+
+        msg.className = 'msg success';
+        msg.innerText = 'Receita salva com sucesso.';
+
+      }catch(e){
+        adicionarNaFilaOffline('salvarReceita', payload);
+
+        msg.className = 'msg success';
+        msg.innerText = 'Sem internet. Receita salva offline e será sincronizada automaticamente.';
       }
-
-      msg.className = 'msg success';
-      msg.innerText = 'Receita salva com sucesso.';
 
       document.getElementById('receitaCategoria').value = '';
       document.getElementById('receitaDescricao').value = '';
@@ -1276,6 +1441,92 @@
       });
 
       tbody.innerHTML = html;
+    }
+
+
+    function imprimirRelatorio(){
+      let dados = ultimoHistorico;
+
+      if(!dados || !dados.movimentos){
+        const linhas = [];
+        const trs = document.querySelectorAll('#historicoBody tr');
+
+        trs.forEach(function(tr){
+          const tds = tr.querySelectorAll('td');
+
+          if(tds.length >= 6){
+            linhas.push({
+              data: tds[0].innerText || '',
+              tipo: tds[1].innerText || '',
+              categoria: tds[2].innerText || '',
+              descricao: tds[3].innerText || '',
+              valorTexto: tds[4].innerText || '',
+              caixa: tds[5].innerText || ''
+            });
+          }
+        });
+
+        dados = {
+          movimentos: linhas,
+          totalReceitas: document.getElementById('histTotalReceitas') ? document.getElementById('histTotalReceitas').innerText : '0 MT',
+          totalDespesas: document.getElementById('histTotalDespesas') ? document.getElementById('histTotalDespesas').innerText : '0 MT',
+          saldo: document.getElementById('histSaldo') ? document.getElementById('histSaldo').innerText : '0 MT',
+          jaFormatado: true
+        };
+      }
+
+      let htmlPrint = '';
+
+      htmlPrint += '<div class="print-header">';
+      htmlPrint += '<div class="print-brand">';
+      htmlPrint += '<h1>Quintos Mineração</h1>';
+      htmlPrint += '<p>Relatório Financeiro Interno | Controle de Caixa</p>';
+      htmlPrint += '</div>';
+      htmlPrint += '<div class="print-meta">';
+      htmlPrint += '<strong>Emitido por:</strong> ' + escapeHtml(usuarioLogado ? usuarioLogado.nome : '') + '<br>';
+      htmlPrint += '<strong>Nível:</strong> ' + escapeHtml(usuarioLogado ? usuarioLogado.nivel : '') + '<br>';
+      htmlPrint += '<strong>Data:</strong> ' + formatarDataJS(new Date());
+      htmlPrint += '</div>';
+      htmlPrint += '</div>';
+
+      htmlPrint += '<div class="print-kpis">';
+      htmlPrint += '<div class="print-kpi"><span>Total Receitas</span><strong>' + (dados.jaFormatado ? dados.totalReceitas : formatMoney(dados.totalReceitas)) + '</strong></div>';
+      htmlPrint += '<div class="print-kpi"><span>Total Despesas</span><strong>' + (dados.jaFormatado ? dados.totalDespesas : formatMoney(dados.totalDespesas)) + '</strong></div>';
+      htmlPrint += '<div class="print-kpi"><span>Saldo</span><strong>' + (dados.jaFormatado ? dados.saldo : formatMoney(dados.saldo)) + '</strong></div>';
+      htmlPrint += '</div>';
+
+      htmlPrint += '<div class="print-section-title">Movimentos Financeiros</div>';
+      htmlPrint += '<table><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Caixa</th></tr></thead><tbody>';
+
+      (dados.movimentos || []).forEach(function(r){
+        const valor = r.valorTexto || formatMoney(r.tipo === 'DESPESA' ? r.total : r.valor);
+
+        htmlPrint += '<tr>' +
+          '<td>' + escapeHtml(r.data) + '</td>' +
+          '<td>' + escapeHtml(r.tipo) + '</td>' +
+          '<td>' + escapeHtml(r.categoria) + '</td>' +
+          '<td>' + escapeHtml(r.descricao) + '</td>' +
+          '<td>' + escapeHtml(valor) + '</td>' +
+          '<td>' + escapeHtml(r.caixa) + '</td>' +
+          '</tr>';
+      });
+
+      htmlPrint += '</tbody></table>';
+
+      htmlPrint += '<div class="print-footer">';
+      htmlPrint += '© 2026 Quintos Mineração. Todos os direitos reservados. | Desenvolvido por DP Solutions';
+      htmlPrint += '</div>';
+
+      document.getElementById('printArea').innerHTML = htmlPrint;
+
+      setTimeout(function(){
+        window.print();
+      }, 200);
+    }
+
+    function formatarDataJS(data){
+      const meses = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return String(data.getDate()).padStart(2,'0') + '/' + meses[data.getMonth()] + '/' + data.getFullYear();
     }
 
     function formatMoney(valor){

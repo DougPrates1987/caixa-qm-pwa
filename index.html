@@ -8,7 +8,7 @@
 
   <meta name="theme-color" content="#003b73">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192-qm.png">
 
   <style>
     :root{
@@ -244,6 +244,18 @@
 
     .pill-green{background:#ecfdf3;color:#027a48}
     .pill-red{background:#fff1f0;color:#b42318}
+    .file-button{
+      display:block;
+      margin-top:8px;
+      background:#eef4ff;
+      color:var(--blue);
+      border:1px dashed #98a2b3;
+      padding:12px;
+      text-align:center;
+      border-radius:3px;
+      font-weight:700;
+      cursor:pointer;
+    }
     .receipt-link{
       display:inline-block;
       background:#eef4ff;
@@ -265,7 +277,7 @@
 
   <section id="loginPage" class="login-page">
     <div class="login-card">
-      <img src="./icons/icon-192.png" alt="Fluxo de Caixa">
+      <img src="./icons/icon-192-qm.png" alt="Fluxo de Caixa">
 
       <h1>Controle de Caixa QM</h1>
       <p>Sistema Interno | PWA Cloudflare</p>
@@ -392,6 +404,7 @@
           <div class="field">
             <label>Recibo / Comprovante</label>
             <input id="despesaRecibo" type="file" accept="image/*,application/pdf" capture="environment">
+            <label for="despesaRecibo" class="file-button">📷 Tirar foto / Anexar recibo</label>
             <div class="muted" style="font-size:12px;margin-top:6px;">Opcional: tire foto pelo celular ou anexe PDF/imagem.</div>
           </div>
 
@@ -432,12 +445,6 @@
           <div class="field">
             <label>Valor</label>
             <input id="receitaValor" type="number" min="0.01" step="0.01">
-          </div>
-
-          <div class="field">
-            <label>Recibo / Comprovante</label>
-            <input id="receitaRecibo" type="file" accept="image/*,application/pdf" capture="environment">
-            <div class="muted" style="font-size:12px;margin-top:6px;">Opcional: tire foto pelo celular ou anexe PDF/imagem.</div>
           </div>
 
           <button class="btn btn-green" style="width:100%;" onclick="salvarReceita()">
@@ -674,6 +681,7 @@
       document.getElementById('despesaDescricao').value = '';
       document.getElementById('despesaQtd').value = '1';
       document.getElementById('despesaValorTotal').value = '';
+      if(document.getElementById('despesaRecibo')) document.getElementById('despesaRecibo').value = '';
       document.getElementById('despesaRecibo').value = '';
 
       carregarDashboard();
@@ -682,16 +690,12 @@
     async function salvarReceita(){
       const msg = document.getElementById('receitaMsg');
 
-      const file = document.getElementById('receitaRecibo').files[0];
-      const recibo = await fileToBase64(file);
-
       const payload = {
         data: document.getElementById('receitaData').value,
         categoria: document.getElementById('receitaCategoria').value,
         descricao: document.getElementById('receitaDescricao').value.trim(),
         valor: document.getElementById('receitaValor').value,
-        caixa: usuarioLogado.caixa,
-        recibo: recibo
+        caixa: usuarioLogado.caixa
       };
 
       if(!payload.data || !payload.categoria || !payload.descricao || !payload.valor){

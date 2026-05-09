@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,13 +7,8 @@
   <title>Controle de Caixa QM</title>
 
   <meta name="theme-color" content="#003b73">
-
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Caixa QM">
 
   <style>
     :root{
@@ -25,14 +19,11 @@
       --card:#ffffff;
       --border:#d0d5dd;
       --text:#101828;
+      --muted:#667085;
       --radius:3px;
     }
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
 
     body{
       font-family:Arial, Helvetica, sans-serif;
@@ -40,18 +31,94 @@
       color:var(--text);
     }
 
+    .hidden{display:none!important}
+
     .topbar{
       background:var(--blue);
       color:#fff;
-      padding:18px;
+      padding:18px 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .topbar-title{
       font-size:20px;
       font-weight:700;
     }
 
+    .user-info{
+      text-align:right;
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .logout{
+      margin-top:5px;
+      padding:6px 10px;
+      background:#fff;
+      color:var(--blue);
+      border:0;
+      border-radius:3px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .login-page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,#003b73,#027a48);
+      padding:20px;
+    }
+
+    .login-card{
+      width:100%;
+      max-width:390px;
+      background:#fff;
+      padding:28px;
+      border-radius:3px;
+      box-shadow:0 20px 60px rgba(0,0,0,.22);
+    }
+
+    .login-card img{
+      width:82px;
+      display:block;
+      margin:0 auto 14px;
+      border-radius:18px;
+    }
+
+    .login-card h1{
+      text-align:center;
+      color:var(--blue);
+      font-size:22px;
+      margin-bottom:6px;
+    }
+
+    .login-card p{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:22px;
+    }
+
     .container{
-      max-width:1200px;
+      max-width:1240px;
       margin:auto;
       padding:20px;
+    }
+
+    .menu{
+      display:flex;
+      gap:8px;
+      margin-bottom:18px;
+      overflow:auto;
+    }
+
+    .menu button{
+      white-space:nowrap;
     }
 
     .grid{
@@ -66,6 +133,7 @@
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:20px;
+      margin-bottom:18px;
     }
 
     .card h3{
@@ -78,13 +146,66 @@
       font-weight:700;
     }
 
-    .green{
-      color:var(--green);
+    .green{color:var(--green)}
+    .red{color:var(--red)}
+
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:6px;
     }
 
-    .red{
-      color:var(--red);
+    input,select,textarea,button{
+      font-family:inherit;
     }
+
+    input,select,textarea{
+      width:100%;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:3px;
+      font-size:14px;
+      background:#fff;
+    }
+
+    textarea{
+      min-height:86px;
+      resize:vertical;
+    }
+
+    .field{
+      margin-bottom:14px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:3px;
+      padding:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .btn-blue{background:var(--blue);color:#fff}
+    .btn-green{background:var(--green);color:#fff}
+    .btn-red{background:var(--red);color:#fff}
+    .btn-light{background:#eef4ff;color:var(--blue);border:1px solid #c7d7fe}
+
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+    }
+
+    .error{color:var(--red)}
+    .success{color:var(--green)}
+    .muted{color:var(--muted)}
 
     .table-wrap{
       overflow:auto;
@@ -110,127 +231,504 @@
       padding:12px;
       border-top:1px solid #eaecf0;
       font-size:13px;
+      vertical-align:top;
     }
 
-    .status{
-      margin-top:15px;
-      font-size:13px;
-      color:#667085;
+    .pill{
+      display:inline-block;
+      padding:5px 8px;
+      border-radius:3px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .pill-green{background:#ecfdf3;color:#027a48}
+    .pill-red{background:#fff1f0;color:#b42318}
+
+    @media(max-width:700px){
+      .form-grid{grid-template-columns:1fr}
+      .topbar{align-items:flex-start}
     }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    Controle de Caixa QM
-  </div>
+  <section id="loginPage" class="login-page">
+    <div class="login-card">
+      <img src="./icons/icon-192.png" alt="Fluxo de Caixa">
 
-  <div class="container">
+      <h1>Controle de Caixa QM</h1>
+      <p>Sistema Interno | PWA Cloudflare</p>
 
-    <div class="grid">
+      <div class="field">
+        <label>Usuário</label>
+        <input id="loginUsuario" type="text" placeholder="Ex: Douglas">
+      </div>
 
-      <div class="card">
-        <h3>Total Receitas</h3>
-        <div class="kpi green" id="totalReceitas">
-          MT 0,00
+      <div class="field">
+        <label>Senha</label>
+        <input id="loginSenha" type="password" placeholder="Digite sua senha">
+      </div>
+
+      <button class="btn btn-blue" style="width:100%;" onclick="login()">
+        Entrar
+      </button>
+
+      <div id="loginMsg" class="msg error"></div>
+    </div>
+  </section>
+
+  <section id="appPage" class="hidden">
+
+    <div class="topbar">
+      <div class="topbar-title">
+        Controle de Caixa QM
+      </div>
+
+      <div class="user-info">
+        <div id="usuarioInfo"></div>
+        <button class="logout" onclick="sair()">Sair</button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="menu">
+        <button class="btn btn-light" onclick="abrirPagina('dashboard')">Dashboard</button>
+        <button class="btn btn-light" onclick="abrirPagina('despesa')">Nova Despesa</button>
+        <button class="btn btn-light" onclick="abrirPagina('receita')">Nova Receita</button>
+        <button class="btn btn-light" onclick="abrirPagina('historico')">Histórico</button>
+      </div>
+
+      <div id="page-dashboard">
+        <div class="grid">
+          <div class="card">
+            <h3>Total Receitas</h3>
+            <div class="kpi green" id="totalReceitas">0,00 MTn</div>
+          </div>
+
+          <div class="card">
+            <h3>Total Despesas</h3>
+            <div class="kpi red" id="totalDespesas">0,00 MTn</div>
+          </div>
+
+          <div class="card">
+            <h3>Saldo</h3>
+            <div class="kpi" id="saldoTotal">0,00 MTn</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Últimos Movimentos</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Categoria</th>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Caixa</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardBody">
+                <tr><td colspan="6">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Total Despesas</h3>
-        <div class="kpi red" id="totalDespesas">
-          MT 0,00
+      <div id="page-despesa" class="hidden">
+        <div class="card">
+          <h3>Nova Despesa</h3>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Data</label>
+              <input id="despesaData" type="date">
+            </div>
+
+            <div class="field">
+              <label>Caixa</label>
+              <input id="despesaCaixa" type="text" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Categoria</label>
+            <select id="despesaCategoria"></select>
+          </div>
+
+          <div class="field">
+            <label>Descrição</label>
+            <textarea id="despesaDescricao"></textarea>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Quantidade</label>
+              <input id="despesaQtd" type="number" min="1" value="1">
+            </div>
+
+            <div class="field">
+              <label>Valor Total</label>
+              <input id="despesaValorTotal" type="number" min="0.01" step="0.01">
+            </div>
+          </div>
+
+          <button class="btn btn-red" style="width:100%;" onclick="salvarDespesa()">
+            Salvar Despesa
+          </button>
+
+          <div id="despesaMsg" class="msg"></div>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Saldo</h3>
-        <div class="kpi" id="saldoTotal">
-          MT 0,00
+      <div id="page-receita" class="hidden">
+        <div class="card">
+          <h3>Nova Receita</h3>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Data</label>
+              <input id="receitaData" type="date">
+            </div>
+
+            <div class="field">
+              <label>Caixa</label>
+              <input id="receitaCaixa" type="text" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Categoria</label>
+            <select id="receitaCategoria"></select>
+          </div>
+
+          <div class="field">
+            <label>Descrição</label>
+            <textarea id="receitaDescricao"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Valor</label>
+            <input id="receitaValor" type="number" min="0.01" step="0.01">
+          </div>
+
+          <button class="btn btn-green" style="width:100%;" onclick="salvarReceita()">
+            Salvar Receita
+          </button>
+
+          <div id="receitaMsg" class="msg"></div>
+        </div>
+      </div>
+
+      <div id="page-historico" class="hidden">
+        <div class="card">
+          <h3>Histórico</h3>
+
+          <button class="btn btn-blue" onclick="carregarHistorico()">
+            Atualizar Histórico
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Categoria</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Caixa</th>
+              </tr>
+            </thead>
+            <tbody id="historicoBody">
+              <tr><td colspan="6">Clique em Atualizar Histórico.</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
     </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Tipo</th>
-            <th>Categoria</th>
-            <th>Descrição</th>
-            <th>Valor</th>
-          </tr>
-        </thead>
-
-        <tbody id="historicoBody">
-          <tr>
-            <td colspan="5">
-              Carregando dados...
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="status">
-      PWA Cloudflare ativo.
-    </div>
-
-  </div>
+  </section>
 
   <script>
-
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwXJ_7GTRb3bzjbWV21AdA8tKpt7DXaViCBVZSsrlW85gbMKJHDX_v3RPRCLZXHZJnF/exec';
 
-    async function carregarDashboard(){
+    let usuarioLogado = null;
 
-      try{
+    document.addEventListener('DOMContentLoaded', function(){
+      const hoje = new Date().toISOString().split('T')[0];
 
-        const resposta = await fetch(APPS_SCRIPT_URL + '?action=dashboard');
+      document.getElementById('despesaData').value = hoje;
+      document.getElementById('receitaData').value = hoje;
 
-        const dados = await resposta.json();
+      const salvo = localStorage.getItem('usuarioLogadoQM');
 
-        document.getElementById('totalReceitas').innerText = formatMoney(dados.totalReceitas || 0);
-        document.getElementById('totalDespesas').innerText = formatMoney(dados.totalDespesas || 0);
-        document.getElementById('saldoTotal').innerText = formatMoney(dados.saldo || 0);
+      if(salvo){
+        usuarioLogado = JSON.parse(salvo);
+        abrirSistema();
+      }
+    });
 
-      }catch(erro){
+    async function api(action, data = {}){
+      const body = new URLSearchParams();
 
-        console.log(erro);
+      body.append('action', action);
 
+      Object.keys(data).forEach(function(k){
+        body.append(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
+      });
+
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:'POST',
+        body:body
+      });
+
+      return await res.json();
+    }
+
+    async function login(){
+      const usuario = document.getElementById('loginUsuario').value.trim();
+      const senha = document.getElementById('loginSenha').value.trim();
+
+      document.getElementById('loginMsg').innerText = 'Verificando...';
+
+      const res = await api('login', {
+        usuario:usuario,
+        senha:senha
+      });
+
+      if(!res.success){
+        document.getElementById('loginMsg').innerText = res.message || 'Login inválido.';
+        return;
       }
 
+      usuarioLogado = res.usuario;
+      localStorage.setItem('usuarioLogadoQM', JSON.stringify(usuarioLogado));
+      abrirSistema();
+    }
+
+    function abrirSistema(){
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('appPage').classList.remove('hidden');
+
+      document.getElementById('usuarioInfo').innerHTML =
+        usuarioLogado.nome + '<br>' + usuarioLogado.nivel;
+
+      document.getElementById('despesaCaixa').value = usuarioLogado.caixa;
+      document.getElementById('receitaCaixa').value = usuarioLogado.caixa;
+
+      carregarCategorias();
+      carregarDashboard();
+    }
+
+    function sair(){
+      localStorage.removeItem('usuarioLogadoQM');
+      usuarioLogado = null;
+      document.getElementById('appPage').classList.add('hidden');
+      document.getElementById('loginPage').classList.remove('hidden');
+    }
+
+    function abrirPagina(pagina){
+      ['dashboard','despesa','receita','historico'].forEach(function(p){
+        document.getElementById('page-' + p).classList.add('hidden');
+      });
+
+      document.getElementById('page-' + pagina).classList.remove('hidden');
+
+      if(pagina === 'dashboard') carregarDashboard();
+      if(pagina === 'historico') carregarHistorico();
+    }
+
+    async function carregarCategorias(){
+      const desp = await api('categoriasDespesa');
+      const rec = await api('categoriasReceita');
+
+      preencherSelect('despesaCategoria', desp.categorias || []);
+      preencherSelect('receitaCategoria', rec.categorias || []);
+    }
+
+    function preencherSelect(id, lista){
+      const select = document.getElementById(id);
+
+      select.innerHTML = '<option value="">Selecione</option>';
+
+      lista.forEach(function(item){
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+
+    async function carregarDashboard(){
+      const res = await api('dashboard', {
+        usuarioLogado: usuarioLogado
+      });
+
+      document.getElementById('totalReceitas').innerText = formatMoney(res.totalReceitas);
+      document.getElementById('totalDespesas').innerText = formatMoney(res.totalDespesas);
+      document.getElementById('saldoTotal').innerText = formatMoney(res.saldo);
+
+      const movimentos = [];
+
+      (res.receitas || []).forEach(function(r){ movimentos.push(r); });
+      (res.despesas || []).forEach(function(d){ movimentos.push(d); });
+
+      renderTabela('dashboardBody', movimentos.slice(0,10));
+    }
+
+    async function salvarDespesa(){
+      const msg = document.getElementById('despesaMsg');
+
+      const payload = {
+        data: document.getElementById('despesaData').value,
+        categoria: document.getElementById('despesaCategoria').value,
+        descricao: document.getElementById('despesaDescricao').value.trim(),
+        qtd: document.getElementById('despesaQtd').value,
+        valorTotal: document.getElementById('despesaValorTotal').value,
+        caixa: usuarioLogado.caixa
+      };
+
+      if(!payload.data || !payload.categoria || !payload.descricao || !payload.qtd || !payload.valorTotal){
+        msg.className = 'msg error';
+        msg.innerText = 'Preencha todos os campos obrigatórios.';
+        return;
+      }
+
+      msg.className = 'msg muted';
+      msg.innerText = 'Salvando...';
+
+      const res = await api('salvarDespesa', {
+        payload: payload
+      });
+
+      if(!res.success){
+        msg.className = 'msg error';
+        msg.innerText = res.message || 'Erro ao salvar.';
+        return;
+      }
+
+      msg.className = 'msg success';
+      msg.innerText = 'Despesa salva com sucesso.';
+
+      document.getElementById('despesaCategoria').value = '';
+      document.getElementById('despesaDescricao').value = '';
+      document.getElementById('despesaQtd').value = '1';
+      document.getElementById('despesaValorTotal').value = '';
+
+      carregarDashboard();
+    }
+
+    async function salvarReceita(){
+      const msg = document.getElementById('receitaMsg');
+
+      const payload = {
+        data: document.getElementById('receitaData').value,
+        categoria: document.getElementById('receitaCategoria').value,
+        descricao: document.getElementById('receitaDescricao').value.trim(),
+        valor: document.getElementById('receitaValor').value,
+        caixa: usuarioLogado.caixa
+      };
+
+      if(!payload.data || !payload.categoria || !payload.descricao || !payload.valor){
+        msg.className = 'msg error';
+        msg.innerText = 'Preencha todos os campos obrigatórios.';
+        return;
+      }
+
+      msg.className = 'msg muted';
+      msg.innerText = 'Salvando...';
+
+      const res = await api('salvarReceita', {
+        payload: payload
+      });
+
+      if(!res.success){
+        msg.className = 'msg error';
+        msg.innerText = res.message || 'Erro ao salvar.';
+        return;
+      }
+
+      msg.className = 'msg success';
+      msg.innerText = 'Receita salva com sucesso.';
+
+      document.getElementById('receitaCategoria').value = '';
+      document.getElementById('receitaDescricao').value = '';
+      document.getElementById('receitaValor').value = '';
+
+      carregarDashboard();
+    }
+
+    async function carregarHistorico(){
+      const res = await api('historico', {
+        usuarioLogado: usuarioLogado
+      });
+
+      const movimentos = [];
+
+      (res.receitas || []).forEach(function(r){ movimentos.push(r); });
+      (res.despesas || []).forEach(function(d){ movimentos.push(d); });
+
+      renderTabela('historicoBody', movimentos);
+    }
+
+    function renderTabela(id, rows){
+      const tbody = document.getElementById(id);
+
+      if(!rows || rows.length === 0){
+        tbody.innerHTML = '<tr><td colspan="6">Nenhum lançamento encontrado.</td></tr>';
+        return;
+      }
+
+      let html = '';
+
+      rows.forEach(function(r){
+        const tipo = r.tipo || '';
+        const valor = tipo === 'DESPESA' ? r.total : r.valor;
+        const pill = tipo === 'RECEITA'
+          ? '<span class="pill pill-green">RECEITA</span>'
+          : '<span class="pill pill-red">DESPESA</span>';
+
+        html += '<tr>' +
+          '<td>' + escapeHtml(r.data) + '</td>' +
+          '<td>' + pill + '</td>' +
+          '<td>' + escapeHtml(r.categoria) + '</td>' +
+          '<td>' + escapeHtml(r.descricao) + '</td>' +
+          '<td>' + formatMoney(valor) + '</td>' +
+          '<td>' + escapeHtml(r.caixa) + '</td>' +
+          '</tr>';
+      });
+
+      tbody.innerHTML = html;
     }
 
     function formatMoney(valor){
-
-      return new Intl.NumberFormat('pt-MZ', {
-        style:'currency',
-        currency:'MZN'
-      }).format(Number(valor || 0));
-
+      return Number(valor || 0).toLocaleString('pt-MZ', {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }) + ' MTn';
     }
 
-    carregarDashboard();
+    function escapeHtml(value){
+      return String(value ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
 
     if('serviceWorker' in navigator){
-
       window.addEventListener('load', function(){
-
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(function(){
-            console.log('Service Worker registrado');
-          })
-          .catch(function(err){
-            console.log(err);
-          });
-
+        navigator.serviceWorker.register('./service-worker.js');
       });
-
     }
-
   </script>
 
 </body>

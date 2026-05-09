@@ -842,19 +842,25 @@
 
       document.getElementById('loginMsg').innerText = 'Verificando...';
 
-      const res = await api('login', {
-        usuario:usuario,
-        senha:senha
-      });
+      try{
+        const res = await api('login', {
+          usuario:usuario,
+          senha:senha
+        });
 
-      if(!res.success){
-        document.getElementById('loginMsg').innerText = res.message || 'Login inválido.';
-        return;
+        if(!res.success){
+          document.getElementById('loginMsg').innerText = res.message || 'Login inválido.';
+          return;
+        }
+
+        usuarioLogado = res.usuario;
+        localStorage.setItem('usuarioLogadoQM', JSON.stringify(usuarioLogado));
+        abrirSistema();
+
+      }catch(erro){
+        document.getElementById('loginMsg').innerText =
+          'Erro de conexão com o servidor. Verifique o Apps Script / Deploy.';
       }
-
-      usuarioLogado = res.usuario;
-      localStorage.setItem('usuarioLogadoQM', JSON.stringify(usuarioLogado));
-      abrirSistema();
     }
 
     function abrirSistema(){
@@ -1241,7 +1247,7 @@
       return ano + '-' + mes + '-' + dia;
     }
 
-    function renderTabela    function renderTabela(id, rows){
+    function renderTabela(id, rows){
       const tbody = document.getElementById(id);
 
       if(!rows || rows.length === 0){

@@ -8,7 +8,7 @@
 
   <meta name="theme-color" content="#003b73">
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-192-qm.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
   <style>
     :root{
@@ -267,8 +267,225 @@
       font-weight:700;
     }
 
+
+    .chart-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .chart-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:18px;
+      margin-bottom:18px;
+    }
+
+    .chart-card h3{
+      color:var(--blue);
+      margin-bottom:12px;
+      font-size:16px;
+    }
+
+    .chart-row{
+      display:grid;
+      grid-template-columns:145px 1fr 95px;
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .chart-label{
+      font-size:12px;
+      color:#344054;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .chart-bg{
+      height:13px;
+      background:#eef2f6;
+      border-radius:3px;
+      overflow:hidden;
+    }
+
+    .chart-fill-green{
+      height:13px;
+      background:var(--green);
+      border-radius:3px;
+    }
+
+    .chart-fill-red{
+      height:13px;
+      background:var(--red);
+      border-radius:3px;
+    }
+
+    .chart-fill-blue{
+      height:13px;
+      background:var(--blue);
+      border-radius:3px;
+    }
+
+    .chart-value{
+      font-size:12px;
+      text-align:right;
+      font-weight:700;
+      color:#344054;
+    }
+
+
+    .filter-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .filter-note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .history-total-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .history-total-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:14px;
+    }
+
+    .history-total-card span{
+      color:var(--muted);
+      font-size:12px;
+      display:block;
+      margin-bottom:6px;
+    }
+
+    .history-total-card strong{
+      font-size:20px;
+      color:var(--blue);
+    }
+
+    .print-area{display:none}
+
+    .print-header{
+      border-bottom:3px solid #003b73;
+      padding-bottom:14px;
+      margin-bottom:18px;
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .print-brand h1{
+      color:#003b73;
+      font-size:22px;
+      margin-bottom:4px;
+    }
+
+    .print-brand p{
+      color:#475467;
+      font-size:12px;
+    }
+
+    .print-meta{
+      text-align:right;
+      font-size:12px;
+      color:#475467;
+      line-height:1.5;
+    }
+
+    .print-kpis{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin:14px 0;
+    }
+
+    .print-kpi{
+      border:1px solid #d0d5dd;
+      padding:10px;
+      border-radius:3px;
+    }
+
+    .print-kpi span{
+      display:block;
+      font-size:10px;
+      color:#667085;
+    }
+
+    .print-kpi strong{
+      display:block;
+      margin-top:4px;
+      color:#003b73;
+      font-size:16px;
+    }
+
+    .print-section-title{
+      color:#003b73;
+      font-size:15px;
+      margin:22px 0 8px;
+      border-left:4px solid #003b73;
+      padding-left:8px;
+    }
+
+    .print-footer{
+      margin-top:25px;
+      padding-top:10px;
+      border-top:1px solid #d0d5dd;
+      color:#667085;
+      font-size:11px;
+      text-align:center;
+    }
+
+    @media print{
+      @page{size:A4;margin:12mm}
+
+      body{background:#fff!important}
+
+      .login-page,
+      #appPage,
+      .topbar,
+      .container{
+        display:none!important;
+      }
+
+      .print-area{
+        display:block!important;
+      }
+
+      .print-area table{
+        width:100%;
+        border-collapse:collapse;
+        font-size:10.5px;
+      }
+
+      .print-area th{
+        background:#f2f4f7!important;
+        color:#344054!important;
+        border:1px solid #d0d5dd;
+        padding:6px;
+      }
+
+      .print-area td{
+        border:1px solid #d0d5dd;
+        padding:6px;
+      }
+    }
+
     @media(max-width:700px){
-      .form-grid{grid-template-columns:1fr}
+      .form-grid,.chart-grid,.filter-actions,.history-total-grid{grid-template-columns:1fr}
       .topbar{align-items:flex-start}
     }
   </style>
@@ -277,10 +494,10 @@
 
   <section id="loginPage" class="login-page">
     <div class="login-card">
-      <img src="./icons/icon-192-qm.png" alt="Fluxo de Caixa">
+      <img src="./icons/icon-192.png" alt="Fluxo de Caixa">
 
       <h1>Controle de Caixa QM</h1>
-      <p>Sistema Interno | PWA Cloudflare</p>
+      <p>Sistema Interno | PWA Cloudflare | Offline visual ativo</p>
 
       <div class="field">
         <label>Usuário</label>
@@ -326,18 +543,47 @@
         <div class="grid">
           <div class="card">
             <h3>Total Receitas</h3>
-            <div class="kpi green" id="totalReceitas">0,00 MTn</div>
+            <div class="kpi green" id="totalReceitas">0 MT</div>
           </div>
 
           <div class="card">
             <h3>Total Despesas</h3>
-            <div class="kpi red" id="totalDespesas">0,00 MTn</div>
+            <div class="kpi red" id="totalDespesas">0 MT</div>
           </div>
 
           <div class="card">
             <h3>Saldo</h3>
-            <div class="kpi" id="saldoTotal">0,00 MTn</div>
+            <div class="kpi" id="saldoTotal">0 MT</div>
           </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Despesas por Categoria</h3>
+            <div id="chartDespesasCategoria" class="muted">Carregando...</div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Receitas por Categoria</h3>
+            <div id="chartReceitasCategoria" class="muted">Carregando...</div>
+          </div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Despesas por Caixa</h3>
+            <div id="chartDespesasCaixa" class="muted">Carregando...</div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Receitas por Caixa</h3>
+            <div id="chartReceitasCaixa" class="muted">Carregando...</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Evolução Mensal</h3>
+          <div id="chartEvolucaoMensal" class="muted">Carregando...</div>
         </div>
 
         <div class="card">
@@ -457,11 +703,73 @@
 
       <div id="page-historico" class="hidden">
         <div class="card">
-          <h3>Histórico</h3>
+          <h3>Histórico Financeiro</h3>
 
-          <button class="btn btn-blue" onclick="carregarHistorico()">
-            Atualizar Histórico
-          </button>
+          <div class="form-grid">
+            <div class="field">
+              <label>Data Inicial</label>
+              <input id="filtroDataInicio" type="date" onchange="atualizarTextoDatasFiltro()">
+              <div id="textoDataInicio" class="muted" style="font-size:12px;margin-top:6px;">--/---/----</div>
+            </div>
+
+            <div class="field">
+              <label>Data Final</label>
+              <input id="filtroDataFim" type="date" onchange="atualizarTextoDatasFiltro()">
+              <div id="textoDataFim" class="muted" style="font-size:12px;margin-top:6px;">--/---/----</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Caixa</label>
+              <select id="filtroCaixa">
+                <option value="">Todos os caixas</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Tipo</label>
+              <select id="filtroTipo" onchange="atualizarCategoriasFiltro()">
+                <option value="TODOS">Todos</option>
+                <option value="RECEITA">Receitas</option>
+                <option value="DESPESA">Despesas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Categoria</label>
+            <select id="filtroCategoria">
+              <option value="">Todas as categorias</option>
+            </select>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn btn-blue" onclick="carregarHistorico()">Aplicar Filtros</button>
+            <button class="btn btn-light" onclick="limparFiltrosHistorico()">Limpar Filtros</button>
+            <button class="btn btn-light" onclick="imprimirRelatorio()">Imprimir Relatório Premium</button>
+          </div>
+
+          <div class="filter-note">
+            Os filtros são aplicados no histórico exibido. Datas seguem o padrão 09/May/2026.
+          </div>
+        </div>
+
+        <div class="history-total-grid">
+          <div class="history-total-card">
+            <span>Total Receitas</span>
+            <strong class="green" id="histTotalReceitas">0 MT</strong>
+          </div>
+
+          <div class="history-total-card">
+            <span>Total Despesas</span>
+            <strong class="red" id="histTotalDespesas">0 MT</strong>
+          </div>
+
+          <div class="history-total-card">
+            <span>Saldo</span>
+            <strong id="histSaldo">0 MT</strong>
+          </div>
         </div>
 
         <div class="table-wrap">
@@ -478,7 +786,7 @@
               </tr>
             </thead>
             <tbody id="historicoBody">
-              <tr><td colspan="7">Clique em Atualizar Histórico.</td></tr>
+              <tr><td colspan="7">Clique em Aplicar Filtros.</td></tr>
             </tbody>
           </table>
         </div>
@@ -491,6 +799,11 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwXJ_7GTRb3bzjbWV21AdA8tKpt7DXaViCBVZSsrlW85gbMKJHDX_v3RPRCLZXHZJnF/exec';
 
     let usuarioLogado = null;
+    let ultimoDashboard = null;
+    let ultimoHistorico = null;
+    let historicoCompleto = [];
+    let categoriasDespesaCache = [];
+    let categoriasReceitaCache = [];
 
     document.addEventListener('DOMContentLoaded', function(){
       const hoje = new Date().toISOString().split('T')[0];
@@ -555,6 +868,8 @@
       document.getElementById('receitaCaixa').value = usuarioLogado.caixa;
 
       carregarCategorias();
+      carregarCaixasFiltro();
+      atualizarTextoDatasFiltro();
       carregarDashboard();
     }
 
@@ -580,8 +895,12 @@
       const desp = await api('categoriasDespesa');
       const rec = await api('categoriasReceita');
 
-      preencherSelect('despesaCategoria', desp.categorias || []);
-      preencherSelect('receitaCategoria', rec.categorias || []);
+      categoriasDespesaCache = desp.categorias || [];
+      categoriasReceitaCache = rec.categorias || [];
+
+      preencherSelect('despesaCategoria', categoriasDespesaCache);
+      preencherSelect('receitaCategoria', categoriasReceitaCache);
+      atualizarCategoriasFiltro();
     }
 
     function preencherSelect(id, lista){
@@ -605,11 +924,18 @@
       document.getElementById('totalReceitas').innerText = formatMoney(res.totalReceitas);
       document.getElementById('totalDespesas').innerText = formatMoney(res.totalDespesas);
       document.getElementById('saldoTotal').innerText = formatMoney(res.saldo);
+      ultimoDashboard = res;
 
       const movimentos = [];
 
       (res.receitas || []).forEach(function(r){ movimentos.push(r); });
       (res.despesas || []).forEach(function(d){ movimentos.push(d); });
+
+      montarGraficoBarras('chartDespesasCategoria', res.despesasPorCategoria || [], 'red');
+      montarGraficoBarras('chartReceitasCategoria', res.receitasPorCategoria || [], 'green');
+      montarGraficoBarras('chartDespesasCaixa', res.despesasPorCaixa || [], 'red');
+      montarGraficoBarras('chartReceitasCaixa', res.receitasPorCaixa || [], 'green');
+      montarEvolucaoMensal(res.evolucaoMensal || []);
 
       renderTabela('dashboardBody', movimentos.slice(0,10));
     }
@@ -738,10 +1064,184 @@
       (res.receitas || []).forEach(function(r){ movimentos.push(r); });
       (res.despesas || []).forEach(function(d){ movimentos.push(d); });
 
-      renderTabela('historicoBody', movimentos);
+      historicoCompleto = movimentos;
+
+      aplicarFiltrosHistorico();
     }
 
-    function renderTabela(id, rows){
+    function aplicarFiltrosHistorico(){
+      const filtrado = filtrarHistorico(historicoCompleto);
+
+      const totalReceitas = filtrado
+        .filter(function(item){ return item.tipo === 'RECEITA'; })
+        .reduce(function(soma,item){ return soma + Number(item.valor || 0); },0);
+
+      const totalDespesas = filtrado
+        .filter(function(item){ return item.tipo === 'DESPESA'; })
+        .reduce(function(soma,item){ return soma + Number(item.total || 0); },0);
+
+      const saldo = totalReceitas - totalDespesas;
+
+      document.getElementById('histTotalReceitas').innerText = formatMoney(totalReceitas);
+      document.getElementById('histTotalDespesas').innerText = formatMoney(totalDespesas);
+      document.getElementById('histSaldo').innerText = formatMoney(saldo);
+
+      ultimoHistorico = {
+        movimentos: filtrado,
+        totalReceitas: totalReceitas,
+        totalDespesas: totalDespesas,
+        saldo: saldo
+      };
+
+      renderTabela('historicoBody', filtrado);
+    }
+
+    function filtrarHistorico(rows){
+      const dataInicio = document.getElementById('filtroDataInicio') ? document.getElementById('filtroDataInicio').value : '';
+      const dataFim = document.getElementById('filtroDataFim') ? document.getElementById('filtroDataFim').value : '';
+      const caixa = document.getElementById('filtroCaixa') ? document.getElementById('filtroCaixa').value : '';
+      const tipo = document.getElementById('filtroTipo') ? document.getElementById('filtroTipo').value : 'TODOS';
+      const categoria = document.getElementById('filtroCategoria') ? document.getElementById('filtroCategoria').value : '';
+
+      return (rows || []).filter(function(item){
+        if(tipo !== 'TODOS' && item.tipo !== tipo) return false;
+        if(caixa && item.caixa !== caixa) return false;
+        if(categoria && item.categoria !== categoria) return false;
+
+        const iso = dataVisualParaISO(item.data);
+
+        if(dataInicio && iso && iso < dataInicio) return false;
+        if(dataFim && iso && iso > dataFim) return false;
+
+        return true;
+      });
+    }
+
+    function limparFiltrosHistorico(){
+      document.getElementById('filtroDataInicio').value = '';
+      document.getElementById('filtroDataFim').value = '';
+      document.getElementById('filtroTipo').value = 'TODOS';
+      document.getElementById('filtroCategoria').value = '';
+
+      if(usuarioLogado && usuarioLogado.nivel === 'ADMIN'){
+        document.getElementById('filtroCaixa').value = '';
+      }
+
+      atualizarTextoDatasFiltro();
+      atualizarCategoriasFiltro();
+      aplicarFiltrosHistorico();
+    }
+
+    async function carregarCaixasFiltro(){
+      const select = document.getElementById('filtroCaixa');
+
+      if(!select) return;
+
+      select.innerHTML = '<option value="">Todos os caixas</option>';
+
+      if(usuarioLogado && usuarioLogado.nivel !== 'ADMIN'){
+        const opt = document.createElement('option');
+        opt.value = usuarioLogado.caixa;
+        opt.textContent = usuarioLogado.caixa;
+        select.appendChild(opt);
+        select.value = usuarioLogado.caixa;
+        select.disabled = true;
+        return;
+      }
+
+      const res = await api('caixas');
+
+      (res.caixas || []).forEach(function(caixa){
+        const opt = document.createElement('option');
+        opt.value = caixa;
+        opt.textContent = caixa;
+        select.appendChild(opt);
+      });
+    }
+
+    function atualizarCategoriasFiltro(){
+      const select = document.getElementById('filtroCategoria');
+      const tipo = document.getElementById('filtroTipo') ? document.getElementById('filtroTipo').value : 'TODOS';
+
+      if(!select) return;
+
+      let lista = [];
+
+      if(tipo === 'RECEITA'){
+        lista = categoriasReceitaCache || [];
+      } else if(tipo === 'DESPESA'){
+        lista = categoriasDespesaCache || [];
+      } else {
+        lista = []
+          .concat(categoriasReceitaCache || [])
+          .concat(categoriasDespesaCache || []);
+      }
+
+      const unicas = [];
+
+      lista.forEach(function(item){
+        if(item && unicas.indexOf(item) === -1) unicas.push(item);
+      });
+
+      unicas.sort();
+
+      select.innerHTML = '<option value="">Todas as categorias</option>';
+
+      unicas.forEach(function(cat){
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+    }
+
+    function atualizarTextoDatasFiltro(){
+      const inicio = document.getElementById('textoDataInicio');
+      const fim = document.getElementById('textoDataFim');
+
+      if(inicio){
+        inicio.innerText = formatarDataInputVisual(document.getElementById('filtroDataInicio').value);
+      }
+
+      if(fim){
+        fim.innerText = formatarDataInputVisual(document.getElementById('filtroDataFim').value);
+      }
+    }
+
+    function formatarDataInputVisual(valor){
+      if(!valor) return '--/---/----';
+
+      const partes = valor.split('-');
+
+      if(partes.length !== 3) return valor;
+
+      const meses = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      return partes[2] + '/' + meses[Number(partes[1]) - 1] + '/' + partes[0];
+    }
+
+    function dataVisualParaISO(valor){
+      if(!valor) return '';
+
+      const partes = String(valor).split('/');
+
+      if(partes.length !== 3) return '';
+
+      const mapa = {
+        Jan:'01', Feb:'02', Mar:'03', Apr:'04', May:'05', Jun:'06',
+        Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12'
+      };
+
+      const dia = partes[0].padStart(2,'0');
+      const mes = mapa[partes[1]];
+      const ano = partes[2];
+
+      if(!mes) return '';
+
+      return ano + '-' + mes + '-' + dia;
+    }
+
+    function renderTabela    function renderTabela(id, rows){
       const tbody = document.getElementById(id);
 
       if(!rows || rows.length === 0){
@@ -773,10 +1273,10 @@
     }
 
     function formatMoney(valor){
-      return Number(valor || 0).toLocaleString('pt-MZ', {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }) + ' MTn';
+      const n = Math.round(Number(valor || 0));
+      return n.toLocaleString('pt-MZ', {
+        maximumFractionDigits: 0
+      }) + ' MT';
     }
 
     function escapeHtml(value){
@@ -794,6 +1294,8 @@
       });
     }
   </script>
+
+<div id="printArea" class="print-area"></div>
 
 </body>
 </html>

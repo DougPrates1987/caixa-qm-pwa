@@ -1,4 +1,4 @@
-const CACHE_NAME = 'caixa-qm-v1';
+const CACHE_NAME = 'caixa-qm-v3';
 
 const ASSETS = [
   './',

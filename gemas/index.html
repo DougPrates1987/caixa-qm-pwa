@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gemas">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Calculadora de Gemas</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f4f4f6;color:#111}
+    .wrap{max-width:520px;margin:0 auto;padding:24px 18px 40px}
+    h1{font-size:28px;margin:8px 0 4px;text-align:center}
+    .sub{text-align:center;color:#666;margin-bottom:28px}
+    .card{background:#fff;border-radius:18px;padding:18px;margin-bottom:16px}
+    label{display:block;font-weight:700;font-size:15px;margin-bottom:8px}
+    input{width:100%;font-size:24px;padding:15px;border:2px solid #d7d7dc;border-radius:12px;outline:none}
+    input:focus{border-color:#111}
+    button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:12px;background:#111;color:#fff;font-size:18px;font-weight:700;min-height:52px}
+    .caption{font-size:13px;color:#666;margin-top:16px}
+    .value{font-size:30px;font-weight:800;line-height:1.15;margin-top:3px;overflow-wrap:anywhere}
+    .total{background:#111;color:#fff}
+    .total .caption{color:#bbb}
+    .msg{min-height:20px;color:#b00020;font-size:13px;margin-top:10px}
+    .key{text-align:center;color:#777;font-size:12px;line-height:1.6;margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Calculadora de Gemas</h1>
+    <div class="sub">Instalada no iPhone • funciona offline</div>
+
+    <section class="card">
+      <label for="codigo">Código</label>
+      <input id="codigo" type="text" placeholder="Ex.: OOS2E" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button id="btnCodigo" type="button">Calcular valor/ct</button>
+      <div class="caption">Valor por quilate</div>
+      <div class="value" id="valorCt">US$ 0,00 / ct</div>
+      <div class="msg" id="msg"></div>
+    </section>
+
+    <section class="card">
+      <label for="peso">Quantidade em quilates</label>
+      <input id="peso" type="text" inputmode="decimal" placeholder="Ex.: 2,00">
+      <button id="btnTotal" type="button">Calcular total</button>
+    </section>
+
+    <section class="card total">
+      <div class="caption">Valor total</div>
+      <div class="value" id="total">US$ 0,00</div>
+    </section>
+
+    <div class="key">
+      C=1 · O=2 · L=3 · A=4 · S=5 · P=6 · R=7 · I=8 · T=9 · E=0<br>
+      OOS2E = US$ 22.500/ct
+    </div>
+  </div>
+
+<script>
+(() => {
+  const mapa={C:'1',O:'2',L:'3',A:'4',S:'5',P:'6',R:'7',I:'8',T:'9',E:'0'};
+  const codigo=document.getElementById('codigo');
+  const peso=document.getElementById('peso');
+  const valorCt=document.getElementById('valorCt');
+  const total=document.getElementById('total');
+  const msg=document.getElementById('msg');
+  let preco=0;
+
+  const usd=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'USD'}).format(v);
+
+  function decode(raw){
+    const s=raw.toUpperCase().replace(/\s+/g,'');
+    if(!s) return {erro:'Digite o código.'};
+    let out='',i=0;
+    while(i<s.length){
+      if(/\d/.test(s[i])){
+        let n='';
+        while(i<s.length && /\d/.test(s[i])) n+=s[i++];
+        if(i>=s.length) return {erro:'O número precisa vir antes de uma letra.'};
+        const l=s[i++];
+        if(!(l in mapa)) return {erro:'Letra inválida: '+l};
+        const q=parseInt(n,10);
+        if(!Number.isInteger(q)||q<1||q>50) return {erro:'Repetição inválida.'};
+        out+=mapa[l].repeat(q);
+      }else{
+        const l=s[i++];
+        if(!(l in mapa)) return {erro:'Letra inválida: '+l};
+        out+=mapa[l];
+      }
+    }
+    const valor=Number(out);
+    return Number.isFinite(valor)?{valor}:{erro:'Código inválido.'};
+  }
+
+  function calcCodigo(){
+    codigo.value=codigo.value.toUpperCase();
+    const r=decode(codigo.value);
+    if(r.erro){preco=0;valorCt.textContent='US$ 0,00 / ct';total.textContent='US$ 0,00';msg.textContent=r.erro;return}
+    preco=r.valor; valorCt.textContent=usd(preco)+' / ct'; total.textContent='US$ 0,00'; msg.textContent='';
+    peso.focus();
+  }
+
+  function calcTotal(){
+    if(preco<=0){msg.textContent='Calcule primeiro o código.';return}
+    const p=Number(peso.value.trim().replace(',','.'));
+    if(!Number.isFinite(p)||p<0){msg.textContent='Digite uma quantidade válida em quilates.';return}
+    msg.textContent=''; total.textContent=usd(preco*p); peso.blur();
+  }
+
+  document.getElementById('btnCodigo').addEventListener('click',calcCodigo);
+  document.getElementById('btnTotal').addEventListener('click',calcTotal);
+  codigo.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();calcCodigo()}});
+  peso.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();calcTotal()}});
+  codigo.addEventListener('input',()=>{codigo.value=codigo.value.toUpperCase()});
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>

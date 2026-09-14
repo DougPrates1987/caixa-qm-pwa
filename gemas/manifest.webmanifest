@@ -1,8 +1,17 @@
 {
-  "name": "Calculadora de Gemas",
-  "short_name": "Gemas",
+  "name": "Brazil Gem Commerce — Code Decoder",
+  "short_name": "BGC Codes",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f4f6",
-  "theme_color": "#111111"
+  "background_color": "#ffffff",
+  "theme_color": "#003058",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

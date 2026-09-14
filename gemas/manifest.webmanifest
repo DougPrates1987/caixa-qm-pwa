@@ -4,14 +4,14 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#f6f4ee",
   "theme_color": "#003058",
   "icons": [
     {
-      "src": "./icon.svg",
+      "src": "./Icone2.png",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

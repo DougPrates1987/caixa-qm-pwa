@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#003058">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Gemas">
+  <meta name="apple-mobile-web-app-title" content="Gems">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <title>Brazil Gem Commerce — Códigos</title>
+  <title>Brazil Gem Commerce — Code Decoder</title>
   <style>
     :root{
       --navy:#003058;
@@ -63,27 +63,27 @@
   <div class="wrap">
     <header class="brand">
       <p class="eyebrow">Brazil Gem Commerce</p>
-      <h1>Decodificador de Códigos</h1>
-      <p class="brand-sub">Cálculo interno de valor por quilate</p>
+      <h1>Code Decoder</h1>
+      <p class="brand-sub">Internal price-per-carat calculation</p>
     </header>
 
     <section class="card">
-      <label for="codigo">Código</label>
-      <input id="codigo" type="text" placeholder="Digite o código" autocomplete="off" autocapitalize="characters" spellcheck="false">
-      <button id="btnCodigo" type="button">Calcular valor por quilate</button>
-      <div class="caption">Valor por quilate</div>
+      <label for="codigo">Code</label>
+      <input id="codigo" type="text" placeholder="Enter code" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button id="btnCodigo" type="button">Calculate price per carat</button>
+      <div class="caption">Price per carat</div>
       <div class="value" id="valorCt">US$ 0 / ct</div>
       <div class="msg" id="msg"></div>
     </section>
 
     <section class="card">
-      <label for="peso">Quantidade em quilates</label>
-      <input id="peso" type="text" inputmode="decimal" placeholder="Ex.: 2,00">
-      <button id="btnTotal" type="button">Calcular valor total</button>
+      <label for="peso">Weight in carats</label>
+      <input id="peso" type="text" inputmode="decimal" placeholder="Example: 2.00">
+      <button id="btnTotal" type="button">Calculate total value</button>
     </section>
 
     <section class="card total">
-      <div class="caption">Valor total</div>
+      <div class="caption">Total value</div>
       <div class="value" id="total">US$ 0</div>
     </section>
 
@@ -100,32 +100,32 @@
   const msg=document.getElementById('msg');
   let preco=0;
 
-  const usd=v=>new Intl.NumberFormat('pt-BR',{
-    style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0
+  const usd=v=>'US$ '+new Intl.NumberFormat('en-US',{
+    minimumFractionDigits:0,maximumFractionDigits:0
   }).format(Math.round(v));
 
   function decode(raw){
     const s=raw.toUpperCase().replace(/\s+/g,'');
-    if(!s) return {erro:'Digite o código.'};
+    if(!s) return {erro:'Enter a code.'};
     let out='',i=0;
     while(i<s.length){
       if(/\d/.test(s[i])){
         let n='';
         while(i<s.length && /\d/.test(s[i])) n+=s[i++];
-        if(i>=s.length) return {erro:'O número precisa vir antes de uma letra.'};
+        if(i>=s.length) return {erro:'A number must be followed by a letter.'};
         const l=s[i++];
-        if(!(l in mapa)) return {erro:'Letra inválida: '+l};
+        if(!(l in mapa)) return {erro:'Invalid letter: '+l};
         const q=parseInt(n,10);
-        if(!Number.isInteger(q)||q<1||q>50) return {erro:'Repetição inválida.'};
+        if(!Number.isInteger(q)||q<1||q>50) return {erro:'Invalid repetition.'};
         out+=mapa[l].repeat(q);
       }else{
         const l=s[i++];
-        if(!(l in mapa)) return {erro:'Letra inválida: '+l};
+        if(!(l in mapa)) return {erro:'Invalid letter: '+l};
         out+=mapa[l];
       }
     }
     const valor=Number(out);
-    return Number.isFinite(valor)?{valor}:{erro:'Código inválido.'};
+    return Number.isFinite(valor)?{valor}:{erro:'Invalid code.'};
   }
 
   function calcCodigo(){
@@ -146,9 +146,9 @@
   }
 
   function calcTotal(){
-    if(preco<=0){msg.textContent='Calcule primeiro o código.';return}
+    if(preco<=0){msg.textContent='Calculate the code first.';return}
     const p=Number(peso.value.trim().replace(',','.'));
-    if(!Number.isFinite(p)||p<0){msg.textContent='Digite uma quantidade válida em quilates.';return}
+    if(!Number.isFinite(p)||p<0){msg.textContent='Enter a valid weight in carats.';return}
     msg.textContent='';
     total.textContent=usd(preco*p);
     peso.blur();
